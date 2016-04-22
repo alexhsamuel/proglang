@@ -18,7 +18,7 @@ The calendar is one of "all", "weekdays", "weekends", or the path to a calendar 
 
 The expression grammar is as follows:
 
-- `DATE` := an ISO 8601 date
+- `DATE` := ISO 8601 date | "today"
 - `OFFSET` := a signed integer offset in days
 - `DATE-EXPR` := `DATE-EXPR + OFFSET` | `DATE-EXPR - OFFSET` 
 - `DATE-DIFF` := `DATE-EXPR - DATE-EXPR`

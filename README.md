@@ -20,7 +20,7 @@ The expression grammar is as follows:
 
 - `DATE` := ISO 8601 date | "today"
 - `OFFSET` := a signed integer offset in days
-- `DATE-EXPR` := `DATE-EXPR + OFFSET` | `DATE-EXPR - OFFSET` 
+- `DATE-EXPR` := `DATE >> OFFSET` | `DATE << OFFSET` | `DATE`
 - `DATE-DIFF` := `DATE-EXPR - DATE-EXPR`
 - `DATE-RANGE` := `DATE-EXPR .. DATE-EXPR` | `DATE-EXPR ... DATE-EXPR`
 - `EXPR` := `DATE-EXPR` | `DATE-DIFF` | `DATE-RANGE`

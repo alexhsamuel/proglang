@@ -2,6 +2,11 @@ import datetime
 import re
 
 from   . import parse_date
+from   . import calendar
+
+__all__ = (
+    "evaluate",
+)
 
 #-------------------------------------------------------------------------------
 
@@ -39,7 +44,7 @@ def tokenize(expr):
 def evaluate_date(tokens, context):
     token, text = tokens.pop(0)
     if token == "date":
-        return evaluate_date(text)
+        return parse_date(text)
     elif token == "today":
         return context["today"]
     else:
@@ -50,12 +55,13 @@ def evaluate_date_expr(tokens, context):
     date = evaluate_date(tokens, context)
     if len(tokens) > 0 and tokens[0][0] in ("<<", ">>"):
         token, _ = tokens.pop(0)
-        date = context["calendar"].to(date, token == ">>")
+        forward = token == ">>"
+        date = context["calendar"].find(date, forward)
         if tokens[0][0] == "offset":
             _, offset = tokens.pop(0)
             offset = int(offset)
-            offset = offset if token == ">>" else -offset
-            return context["calendar"].add(date, offset)
+            offset = offset if forward else -offset
+            return calendar.shift(context["calendar"], date, offset)
         else:
             raise RuntimeError("unexpected token: {}".format(text))
     else:
@@ -69,7 +75,7 @@ def evaluate_date_diff(tokens, context):
         raise RuntimeError("unexpected token: {}".format(text))
     date1 = evaluate_date_expr(tokens, context)
     
-    return date_diff(context["calendar"], date0, date1)
+    return calendar.offset(context["calendar"], date1, date0)
 
 
 def evaluate_date_range(tokens, context):
@@ -83,7 +89,7 @@ def evaluate_date_range(tokens, context):
         raise RuntimeError("unexpected token: {}".format(text))
     date1 = evaluate_date_expr(tokens, context)
 
-    return date_range(context["calendar"], date0, date1, inclusive)
+    return calendar.range(context["calendar"], date0, date1, inclusive)
 
 
 def evaluate_expr(tokens, context):
@@ -94,6 +100,8 @@ def evaluate_expr(tokens, context):
     else:
         return evaluate_date_expr(tokens, context)
 
+
+#-------------------------------------------------------------------------------
 
 def evaluate(expr, calendar):
     context = dict(calendar=calendar, today=datetime.date.today())

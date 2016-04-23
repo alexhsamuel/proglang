@@ -3,14 +3,14 @@
 A command line calculator for simple date expressions.
 
 ```sh
-$ datecalc "2016-04-22 + 7"
+$ datecalc "2016-04-22 >> 7"
 2016-04-29
 ```
 
 With `-c` or `--calendar`, the computation is performed in the given calendar.
 
 ```sh
-$ datecalc -c weekdays "2016-04-22 + 7"
+$ datecalc -c weekdays "2016-04-22 >> 7"
 2016-05-03
 ```
 

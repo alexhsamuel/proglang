@@ -4,13 +4,21 @@ import (
 	"date"
 )
 
+func shift(d date.Date, forward bool) date.Date {
+	if forward {
+		return d.Next()
+	} else {
+		return d.Prev()
+	}
+}
+
 type Calendar interface {
 	contains(date date.Date) bool
 }
 
 func find(cal Calendar, date date.Date, forward bool) date.Date {
 	for !cal.contains(date) {
-		date = date.Shift(forward)
+		date = shift(date, forward)
 	}
 	return date
 }
@@ -48,7 +56,7 @@ func Shift(cal Calendar, d date.Date, offset int) date.Date {
 
 	forward := offset > 0
 	for i := 0; i < abs(offset); i += 1 {
-		d = find(cal, d.Shift(forward), forward)
+		d = find(cal, shift(d, forward), forward)
 	}
 	return d
 }

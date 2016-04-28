@@ -32,7 +32,7 @@ type Date struct {
 	Day   Day
 }
 
-func (date Date) valid() bool {
+func (date Date) Valid() bool {
 	return 1 <= date.Year && date.Year <= 9999 &&
 		1 <= date.Month && date.Month <= 12 &&
 		1 <= date.Day && date.Day <= DaysInMonth(date.Year, date.Month)
@@ -44,7 +44,7 @@ func Less(date0 Date, date1 Date) bool {
 		(date0.Month == date1.Month && date0.Day < date1.Day)))
 }
 
-func (date Date) next() Date {
+func (date Date) Next() Date {
 	date.Day += 1
 	if date.Day > DaysInMonth(date.Year, date.Month) {
 		date.Day = 1
@@ -57,7 +57,7 @@ func (date Date) next() Date {
 	return date
 }
 
-func (date Date) prev() Date {
+func (date Date) Prev() Date {
 	date.Day -= 1
 	if date.Day == 0 {
 		date.Month -= 1
@@ -70,12 +70,17 @@ func (date Date) prev() Date {
 	return date
 }
 
-func (date Date) Shift(forward bool) Date {
-	if (forward) {
-		return date.next()
-	} else {
-		return date.prev()
-	}
+func (date Date) Shift(count int) Date {
+	if (count > 0) {
+		for i := 0; i < count; i++ {
+			date = date.Next()
+		}
+	} else if (count < 0) {
+		for i := 0; i < -count; i++ {
+			date = date.Prev()
+		}
+	} 
+	return date
 }
 
 var mTable = []int{1, 4, 3, 6, 1, 4, 6, 2, 5, 0, 3, 5}

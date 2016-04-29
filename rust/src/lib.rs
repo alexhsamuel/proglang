@@ -1,6 +1,16 @@
+/// Gregorican year.
+///
+/// Years 1 through 9999 are supported.
 pub type Year = u16;
+
+/// Month of the year, January=1 through December=12.
 pub type Month = u8;
+
+/// Day of the month, 1 through the number of days in the month.
 pub type Day = u8;
+
+/// Day of the week, Monday=0 through Sunday=6.
+pub type Weekday = u8; 
 
 pub fn is_leap_year(year: Year) -> bool {
     return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
@@ -83,6 +93,23 @@ impl Date {
 
 }
 
+const M_TABLE: [u8; 12] = [1, 4, 3, 6, 1, 4, 6, 2, 5, 0, 3, 5];
+const C_TABLE: [u8;  4] = [0, 5, 3, 1];
+
+pub fn get_weekday(date: Date) -> Weekday {
+    // See https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week#Kraitchik.27s_variation.
+    let y = if date.month < 3 { date.year - 1 } else { date.year };
+    let s = (y % 100) as u8;
+    ((  C_TABLE[(y / 100 % 4) as usize]     // century leap years
+      + s / 4                               // leap years
+      + s                                   // years
+      + M_TABLE[(date.month - 1) as usize]  // months
+      + date.day                            // days
+      + 5                                   // start on Monday
+        ) % 7) as Weekday
+      
+}
+
 //------------------------------------------------------------------------------
 
 #[cfg(test)]
@@ -111,5 +138,18 @@ mod tests {
         assert_eq!(first.shift(365), Date::new(2,  1,  1));
         assert_eq!(Date::new(1, 12, 31).shift(1), Date::new(2, 1, 1));
     }
+
+    #[test]
+    fn get_weekday_test() {
+        assert_eq!(get_weekday(Date::new(   1,  1,  1)), 0);
+        assert_eq!(get_weekday(Date::new(1973, 12,  3)), 0);
+        assert_eq!(get_weekday(Date::new(2016,  1,  1)), 4);
+        assert_eq!(get_weekday(Date::new(2016,  4, 28)), 3);
+        assert_eq!(get_weekday(Date::new(2016,  5,  1)), 6);
+        assert_eq!(get_weekday(Date::new(9600,  1,  1)), 5);
+        assert_eq!(get_weekday(Date::new(9900,  1,  1)), 0);
+        assert_eq!(get_weekday(Date::new(9999, 12, 31)), 4);
+    }
+
 }
 

@@ -1,3 +1,9 @@
+extern crate datecalc;
+
+use datecalc::*;
+
 fn main() {
-   println!("Hello, world!")
+    for y in 1 .. 10000 {
+        print!("{:04} {:1}\n", y, get_weekday(Date::new(y as Year, 1, 1)));
+    }
 }
